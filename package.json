@@ -1,0 +1,22 @@
+{
+  "name": "@bugsounet/screen",
+  "version": "0.0.1",
+  "description": "node screen management library",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [
+    "screen",
+    "node",
+    "display"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bugsounet/screen"
+  },
+  "author": "bugsounet",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bugsounet/screen/issues"
+  },
+  "homepage": "https://github.com/bugsounet/screen"
+}
