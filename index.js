@@ -1,11 +1,11 @@
-/** Screen Plugin For A2D **/
+/** Screen management **/
 /** bugsounet **/
 
 const exec = require('child_process').exec
 const process = require('process');
 
 var _log = function() {
-    var context = "[A2D:SCREEN]"
+    var context = "[SCREEN]"
     return Function.prototype.bind.call(console.log, console, context)
 }()
 
@@ -16,9 +16,10 @@ var log = function() {
 class SCREEN {
   constructor(config, callback, debug, governorControl) {
     this.config = config
-    this.sendSocketNotification = callback.sendSocketNotification
+    this.sendSocketNotification = callback
     this.governor = governorControl
     if (debug == true) log = _log
+    this.version = require('./package.json').version
     this.interval = null
     this.default = {
       delay: 5 * 60 * 1000,
@@ -36,15 +37,15 @@ class SCREEN {
       locked: false,
       power: false
     }
-    console.log("[A2D:SCREEN] Initialized...")
+    console.log("[SCREEN] Screen v"+ this.version +" Initialized...")
   }
   activate () {
     if (!this.config.turnOffDisplay && !this.config.ecoMode) return log("Disabled.")
     process.on('exit', (code) => {
       if (this.config.turnOffDisplay) this.setPowerDisplay(true)
       if (this.config.governorSleeping) this.governor("WORKING")
-      log('ByeBye !')
-      log('@bugsounet')
+      console.log('[SCREEN] ByeBye !')
+      console.log('[SCREEN] @bugsounet')
     });
     this.start()
   }
