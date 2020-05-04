@@ -76,14 +76,14 @@ object value:
   power: true
 }
 ```
-### detectorControl
+### detectorControl [optional]
 
 require [@bugsounet/snowboy](https://www.npmjs.com/package/@bugsounet/snowboy) or compatible
 
 - `SNOWBOY_START` - return notification for start your detector
 - `SNOWBOY_STOP` - return notification for stop your detector
 
-### governorControl
+### governorControl [optional]
 
 require [@bugsounet/governor](https://www.npmjs.com/package/@bugsounet/governor)
 
