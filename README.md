@@ -27,7 +27,8 @@ this.config = {
 var debug = true
 
 this.screen = new Screen(this.config, callback, debug, detectorControl, governorControl)
-this.screen.activate()
+this.screen.start()
+setTimeout(() => { this.screen.state() } , 5 * 1000)
 setTimeout(() => { this.screen.stop() } , 15 * 1000)
 
 function callback(noti, value) {
