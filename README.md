@@ -110,6 +110,7 @@ if you want debuging information, just set to `true`
   `set` value is boolean:
    * `true`: force turn on screen
    * `false`: force turn off screen
+ * `state()`: return state of `screen` in object
 
 ### Notes
  * you can use only `wantedPowerDisplay()` or `setPowerDisplay()` without main script !
