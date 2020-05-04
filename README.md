@@ -61,7 +61,7 @@ Screen(screenConfig, callback, debug, detectorControl, governorControl)
 
 ### callback (notification,value)
 
-- `SCREEN_TIMER` - Display the count down before sleeping mode
+- `SCREEN_TIMER` - Display the count down before sleeping mode (require `displayCounter`)
 - `SCREEN_SHOWING` - return notification for showing modules or other (require `ecoMode`)
 - `SCREEN_HIDING` - return notification for hiding modules or other (require `ecoMode`)
 - `SCREEN_STATE` - return object with actual screen state<br>
@@ -78,14 +78,16 @@ object value:
 ```
 ### detectorControl [optional]
 
-require [@bugsounet/snowboy](https://www.npmjs.com/package/@bugsounet/snowboy) or compatible
+require [@bugsounet/snowboy](https://www.npmjs.com/package/@bugsounet/snowboy) or compatible<br>
+require `detectorSleeping` and only work with `activate()` or `start()` function
 
 - `SNOWBOY_START` - return notification for start your detector
 - `SNOWBOY_STOP` - return notification for stop your detector
 
 ### governorControl [optional]
 
-require [@bugsounet/governor](https://www.npmjs.com/package/@bugsounet/governor)
+require [@bugsounet/governor](https://www.npmjs.com/package/@bugsounet/governor)<br>
+require `governorSleeping` and only work with `activate()` or `start()` function
 
 - `GOVERNOR_WORKING` - return notification to change your governor to working configuration
 - `GOVERNOR_SLEEPING` - return notification to change your governor to sleeping configuration
@@ -113,4 +115,5 @@ if you want debuging information, just set to `true`
  * `state()`: return state of `screen` in object
 
 ### Notes
+ * `turnOffDisplay` work only with `activate()` or `start()` function
  * you can use only `wantedPowerDisplay()` or `setPowerDisplay()` without main script !
