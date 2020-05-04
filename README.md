@@ -98,7 +98,8 @@ require `governorSleeping` and only work with `activate()` or `start()` function
 if you want debuging information, just set to `true`
 
 ## Functions
- * `activate()`: activate main `screen` script with count down (use it with first use)
+ * `activate()`: activate main `screen` script with count down (use it with first use)<br>
+ it force turn on display when escape the script (ctl + c)
  * `start()`: start `screen` script with count down
  * `stop()`: stop `screen` script
  * `reset()`: reset count down
