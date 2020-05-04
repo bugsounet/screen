@@ -27,7 +27,8 @@ this.config = {
 var debug = true
 
 this.screen = new Screen(this.config, callback, debug, detectorControl, governorControl)
-this.screen.activate()
+this.screen.start()
+setTimeout(() => { this.screen.state() } , 5 * 1000)
 setTimeout(() => { this.screen.stop() } , 15 * 1000)
 
 function callback(noti, value) {
@@ -61,7 +62,7 @@ Screen(screenConfig, callback, debug, detectorControl, governorControl)
 
 ### callback (notification,value)
 
-- `SCREEN_TIMER` - Display the count down before sleeping mode
+- `SCREEN_TIMER` - Display the count down before sleeping mode (require `displayCounter`)
 - `SCREEN_SHOWING` - return notification for showing modules or other (require `ecoMode`)
 - `SCREEN_HIDING` - return notification for hiding modules or other (require `ecoMode`)
 - `SCREEN_STATE` - return object with actual screen state<br>
@@ -78,14 +79,16 @@ object value:
 ```
 ### detectorControl [optional]
 
-require [@bugsounet/snowboy](https://www.npmjs.com/package/@bugsounet/snowboy) or compatible
+require [@bugsounet/snowboy](https://www.npmjs.com/package/@bugsounet/snowboy) or compatible<br>
+require `detectorSleeping` and only work with `activate()` or `start()` function
 
 - `SNOWBOY_START` - return notification for start your detector
 - `SNOWBOY_STOP` - return notification for stop your detector
 
 ### governorControl [optional]
 
-require [@bugsounet/governor](https://www.npmjs.com/package/@bugsounet/governor)
+require [@bugsounet/governor](https://www.npmjs.com/package/@bugsounet/governor)<br>
+require `governorSleeping` and only work with `activate()` or `start()` function
 
 - `GOVERNOR_WORKING` - return notification to change your governor to working configuration
 - `GOVERNOR_SLEEPING` - return notification to change your governor to sleeping configuration
@@ -95,7 +98,8 @@ require [@bugsounet/governor](https://www.npmjs.com/package/@bugsounet/governor)
 if you want debuging information, just set to `true`
 
 ## Functions
- * `activate()`: activate main `screen` script with count down (use it with first use)
+ * `activate()`: activate main `screen` script with count down (use it with first use)<br>
+ it force turn on display when escape the script (ctl + c)
  * `start()`: start `screen` script with count down
  * `stop()`: stop `screen` script
  * `reset()`: reset count down
@@ -113,4 +117,5 @@ if you want debuging information, just set to `true`
  * `state()`: return state of `screen` in object
 
 ### Notes
+ * `turnOffDisplay` work only with `activate()` or `start()` function
  * you can use only `wantedPowerDisplay()` or `setPowerDisplay()` without main script !
