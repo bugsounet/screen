@@ -2,7 +2,7 @@
 /** bugsounet **/
 
 const exec = require('child_process').exec
-const process = require('process');
+const process = require('process')
 
 var _log = function() {
     var context = "[SCREEN]"
@@ -14,9 +14,10 @@ var log = function() {
 }
 
 class SCREEN {
-  constructor(config, callback, debug, governorControl) {
+  constructor(config, callback, debug, detectorControl, governorControl) {
     this.config = config
     this.sendSocketNotification = callback
+    this.detector = detectorControl
     this.governor = governorControl
     if (debug == true) log = _log
     this.version = require('./package.json').version
@@ -43,7 +44,7 @@ class SCREEN {
     if (!this.config.turnOffDisplay && !this.config.ecoMode) return log("Disabled.")
     process.on('exit', (code) => {
       if (this.config.turnOffDisplay) this.setPowerDisplay(true)
-      if (this.config.governorSleeping) this.governor("WORKING")
+      if (this.config.governorSleeping) this.governor("GOVERNOR_WORKING")
       console.log('[SCREEN] ByeBye !')
       console.log('[SCREEN] @bugsounet')
     });
@@ -63,7 +64,7 @@ class SCREEN {
         this.sendSocketNotification("SCREEN_SHOWING")
         this.screen.power = true
       }
-      if (this.config.governorSleeping) this.governor("WORKING")
+      if (this.config.governorSleeping) this.governor("GOVERNOR_WORKING")
     }
     clearInterval(this.interval)
     this.interval = null
@@ -86,8 +87,8 @@ class SCREEN {
           if (this.config.turnOffDisplay) this.wantedPowerDisplay(false)
         }
         this.interval = null
-        if (this.config.detectorSleeping) this.sendSocketNotification("SNOWBOY_STOP")
-        if (this.config.governorSleeping) this.governor("SLEEPING")
+        if (this.config.detectorSleeping) this.detector("SNOWBOY_STOP")
+        if (this.config.governorSleeping) this.governor("GOVERNOR_SLEEPING")
         log("Stops by counter.")
       }
     }, 1000)
@@ -97,7 +98,7 @@ class SCREEN {
     if (this.screen.locked) return
 
     if (!this.screen.power) {
-      if (this.config.governorSleeping) this.governor("WORKING")
+      if (this.config.governorSleeping) this.governor("GOVERNOR_WORKING")
       if (this.config.turnOffDisplay) this.wantedPowerDisplay(true)
       if (this.config.ecoMode) {
         this.sendSocketNotification("SCREEN_SHOWING")
@@ -122,8 +123,8 @@ class SCREEN {
   wakeup() {
     if (this.screen.locked) return
     if (!this.screen.power) {
-      if (this.config.governorSleeping) this.governor("WORKING")
-      if (this.config.detectorSleeping) this.sendSocketNotification("SNOWBOY_START")
+      if (this.config.governorSleeping) this.governor("GOVERNOR_WORKING")
+      if (this.config.detectorSleeping) this.detector("SNOWBOY_START")
     }
     this.reset()
   }
@@ -183,6 +184,10 @@ class SCREEN {
     }
     log("Display " + (set ? "ON." : "OFF."))
     this.screen.power = set
+  }
+  
+  state() {
+    this.sendSocketNotification("SCREEN_STATE", this.screen)
   }
 }
 

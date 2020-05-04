@@ -13,13 +13,19 @@ this.config = {
 
 var debug = true
 
-this.screen = new Screen(this.config, callback, debug, governorControl)
+this.screen = new Screen(this.config, callback, debug, detectorControl, governorControl)
 this.screen.start()
+setTimeout(() => { this.screen.state() } , 5 * 1000)
 setTimeout(() => { this.screen.stop() } , 15 * 1000)
 
 function callback(noti, value) {
   if (noti == "SCREEN_TIMER") console.log ("Turn off in", value)
+  if (noti == "SCREEN_STATE") console.log ("Status:", value)
   else console.log("Screen Notification:", noti)
+}
+
+function detectorControl(noti) {
+  console.log("detectorControl Notification:", noti)
 }
 
 function governorControl(noti) {
