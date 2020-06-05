@@ -18,6 +18,7 @@ this.config = {
   turnOffDisplay: true,
   ecoMode: true,
   displayCounter: true,
+  displayBar: true,
   detectorSleeping: true,
   governorSleeping: true,
   rpi4: false,
@@ -33,6 +34,8 @@ setTimeout(() => { this.screen.stop() } , 15 * 1000)
 
 function callback(noti, value) {
   if (noti == "SCREEN_TIMER") console.log ("Turn off in", value)
+  else if (noti == "SCREEN_BAR") console.log("Bar value", value)
+  else if (noti == "SCREEN_STATE") console.log ("Status:", value)
   else console.log("Screen Notification:", noti)
 }
 
@@ -55,6 +58,7 @@ Screen(screenConfig, callback, debug, detectorControl, governorControl)
 - `turnOffDisplay` - Should the display turn off after timeout?
 - `ecoMode` - send a notification to hide all module after timeout?
 - `displayCounter` - send a notification with count-down before sleeping
+- `displayBar` - send a notification with actual count since start (for progress bar)
 - `detectorSleeping` - send a notification to manage detector when screen is off
 - `governorSleeping` - send a notification to manage governor when screen is off
 - `rpi4` -  rpi4 support (use dpms)

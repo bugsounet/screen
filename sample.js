@@ -5,6 +5,7 @@ this.config = {
   turnOffDisplay: true,
   ecoMode: true,
   displayCounter: true,
+  displayBar:true,
   detectorSleeping: true,
   governorSleeping: true,
   rpi4: false,
@@ -20,7 +21,8 @@ setTimeout(() => { this.screen.stop() } , 15 * 1000)
 
 function callback(noti, value) {
   if (noti == "SCREEN_TIMER") console.log ("Turn off in", value)
-  if (noti == "SCREEN_STATE") console.log ("Status:", value)
+  else if (noti == "SCREEN_BAR") console.log("Bar value", value)
+  else if (noti == "SCREEN_STATE") console.log ("Status:", value)
   else console.log("Screen Notification:", noti)
 }
 

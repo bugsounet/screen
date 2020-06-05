@@ -28,6 +28,7 @@ class SCREEN {
       turnOffDisplay: true,
       ecoMode: true,
       displayCounter: true,
+      displayBar: false,
       detectorSleeping: false,
       governorSleeping: false,
       rpi4: false,
