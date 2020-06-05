@@ -11,7 +11,7 @@ npm install @bugsounet/screen
 ## Sample with screen contructor
 
 ```js
-const Screen = require("./index.js")
+const Screen = require("@bugsounet/screen")
 
 this.config = {
   delay: 10 * 1000,
