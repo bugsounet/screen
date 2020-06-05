@@ -67,6 +67,7 @@ Screen(screenConfig, callback, debug, detectorControl, governorControl)
 ### callback (notification,value)
 
 - `SCREEN_TIMER` - Display the count down before sleeping mode (require `displayCounter`)
+- `SCREEN_BAR` - Display the counter since start to sleeping mode (require `displayBar`)
 - `SCREEN_SHOWING` - return notification for showing modules or other (require `ecoMode`)
 - `SCREEN_HIDING` - return notification for hiding modules or other (require `ecoMode`)
 - `SCREEN_STATE` - return object with actual screen state<br>
