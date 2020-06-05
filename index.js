@@ -3,6 +3,7 @@
 
 const exec = require('child_process').exec
 const process = require('process')
+const moment = require('moment')
 
 var _log = function() {
     var context = "[SCREEN]"
@@ -73,8 +74,11 @@ class SCREEN {
       this.screen.running = true
       this.counter -= 1000
       if (this.config.displayCounter) {
-        this.sendSocketNotification("SCREEN_TIMER", new Date(this.counter).toUTCString().match(/\d{2}:\d{2}:\d{2}/)[0])
-        if (this.config.dev) log("Counter:", new Date(this.counter).toUTCString().match(/\d{2}:\d{2}:\d{2}/)[0])
+        this.sendSocketNotification("SCREEN_TIMER", moment(new Date(this.counter)).format("mm:ss"))
+        if (this.config.dev) log("Counter:", moment(new Date(this.counter)).format("mm:ss"))
+      }
+      if (this.config.displayBar) {
+        this.sendSocketNotification("SCREEN_BAR", this.config.delay - this.counter )
       }
       if (this.counter <= 0) {
         clearInterval(this.interval)
