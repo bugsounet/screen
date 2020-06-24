@@ -175,6 +175,7 @@ class SCREEN {
 
   resultDisplay (actual,wanted) {
     log("Display -- Actual: " + actual + " - Wanted: " + wanted)
+    this.screen.power = actual
     if (actual && !wanted) this.setPowerDisplay(false)
     if (!actual && wanted) this.setPowerDisplay(true)
   }
