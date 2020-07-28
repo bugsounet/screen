@@ -57,6 +57,7 @@ class SCREEN {
     if (this.screen.locked || this.screen.running || (!this.config.turnOffDisplay && !this.config.ecoMode)) return
     if (!restart) log("Start.")
     else log("Restart.")
+    this.sendSocketNotification("SCREEN_PRESENCE", true)
     if (!this.screen.power) {
       if (this.config.turnOffDisplay) {
         if (this.config.linux) this.setPowerDisplay(true)
@@ -94,6 +95,7 @@ class SCREEN {
         this.interval = null
         if (this.config.detectorSleeping) this.detector("SNOWBOY_STOP")
         if (this.config.governorSleeping) this.governor("GOVERNOR_SLEEPING")
+        this.sendSocketNotification("SCREEN_PRESENCE", false)
         log("Stops by counter.")
       }
     }, 1000)
@@ -128,7 +130,7 @@ class SCREEN {
   wakeup() {
     if (this.screen.locked) return
     if (!this.screen.power) {
-      if (this.config.governorSleeping) this.governor("GOVERNOR_WORKING")
+      //if (this.config.governorSleeping) this.governor("GOVERNOR_WORKING")
       if (this.config.detectorSleeping) this.detector("SNOWBOY_START")
     }
     this.reset()
@@ -147,6 +149,10 @@ class SCREEN {
     log("Unlocked !")
     this.screen.locked = false
     this.start()
+  }
+
+  forceEnd () {
+    this.counter = 1000
   }
 
   wantedPowerDisplay (wanted) {
