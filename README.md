@@ -60,14 +60,14 @@ Screen(screenConfig, callback, debug, detectorControl, governorControl)
 - `displayBar` - send a notification with actual count since start (for progress bar)
 - `detectorSleeping` - send a notification to manage detector when screen is off
 - `governorSleeping` - send a notification to manage governor when screen is off
-- `mode` - mode for turn off screen
+- `mode` - mode for turn on/off screen
 
 5 modes are available:
- - mode 1: use vgencmd (RPI only)
- - mode 2: use dpms (version RPI)
- - mode 3: use tvservice (RPI only)
- - mode 4: use HDMI CEC
- - mode 5: use dpms (linux version for debian, ubuntu, ...)
+ - `mode: 1` - use vgencmd (RPI only)
+ - `mode: 2` - use dpms (version RPI)
+ - `mode: 3` - use tvservice (RPI only)
+ - `mode: 4` - use HDMI CEC
+ - `mode: 5` - use dpms (linux version for debian, ubuntu, ...)
 
 note: the mode 0 disable turnOffDisplay too
 
