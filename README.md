@@ -21,8 +21,7 @@ this.config = {
   displayBar: true,
   detectorSleeping: true,
   governorSleeping: true,
-  rpi4: false,
-  linux: false
+  mode: 1
 }
 
 var debug = true
@@ -61,8 +60,16 @@ Screen(screenConfig, callback, debug, detectorControl, governorControl)
 - `displayBar` - send a notification with actual count since start (for progress bar)
 - `detectorSleeping` - send a notification to manage detector when screen is off
 - `governorSleeping` - send a notification to manage governor when screen is off
-- `rpi4` -  rpi4 support (use dpms)
-- `linux` - linux support (use dpms)
+- `mode` - mode for turn off screen
+
+5 modes are available:
+ - mode 1: use vgencmd (RPI only)
+ - mode 2: use dpms (version RPI)
+ - mode 3: use tvservice (RPI only)
+ - mode 4: use HDMI CEC
+ - mode 5: use dpms (linux version for debian, ubuntu, ...)
+
+note: the mode 0 disable turnOffDisplay too
 
 ### callback (notification,value)
 
@@ -70,13 +77,16 @@ Screen(screenConfig, callback, debug, detectorControl, governorControl)
 - `SCREEN_BAR` - Display the counter since start to sleeping mode (require `displayBar`)
 - `SCREEN_SHOWING` - return notification for showing modules or other (require `ecoMode`)
 - `SCREEN_HIDING` - return notification for hiding modules or other (require `ecoMode`)
+- `SCREEN_PRESENCE` - return notification for USER_PRESENCE true/false
 - `SCREEN_STATE` - return object with actual screen state<br>
 object value:
+  * `mode`: return the configuration of mode
   * `running`: return `true` if `screen` main script with count down is running
   * `locked`: return `true` if `screen` function is locked
   * `power`: return `true` if your display is On
 ```js
 {
+  mode: 1,
   running: true,
   locked: false,
   power: true
