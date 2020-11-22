@@ -236,8 +236,9 @@ class SCREEN {
             this.screen.error = true
           } else {
             let responseSh = stdout.trim()
-            var displaySh = responseSh.split(" ")[2]
+            var displaySh = responseSh.split("\n")[1].split(" ")[2]
             if (displaySh == "on") actual = true
+            if (displaySh == "unknown") log("HDMI CEC unknow state")
             this.resultDisplay(actual,wanted)
           }
         })
