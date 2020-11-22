@@ -38,8 +38,7 @@ class SCREEN {
       mode: this.config.mode,
       running: false,
       locked: false,
-      power: false,
-      error: false
+      power: false
     }
     if (this.config.turnOffDisplay) {
       switch (this.config.mode) {
@@ -179,7 +178,6 @@ class SCREEN {
   }
 
   wantedPowerDisplay (wanted) {
-    if (this.screen.error) return console.log("[SCREEN] mode Configuration: Error Detected !")
     var actual = false
     switch (this.config.mode) {
       case 0:
@@ -189,10 +187,8 @@ class SCREEN {
       case 1:
       /** vcgencmd **/
         exec("/usr/bin/vcgencmd display_power", (err, stdout, stderr)=> {
-          if (err) {
-            this.logError(err)
-            this.screen.error = true
-          } else {
+          if (err) this.logError(err)
+          else {
             var displaySh = stdout.trim()
             actual = Boolean(Number(displaySh.substr(displaySh.length -1)))
             this.resultDisplay(actual,wanted)
@@ -203,10 +199,8 @@ class SCREEN {
       /** dpms rpi**/
         var actual = false
         exec("DISPLAY=:0 xset q | grep Monitor", (err, stdout, stderr)=> {
-          if (err) {
-            this.logError(err)
-            this.screen.error = true
-          } else {
+          if (err) this.logError(err)
+          else {
             let responseSh = stdout.trim()
             var displaySh = responseSh.split(" ")[2]
             if (displaySh == "On") actual = true
@@ -217,10 +211,8 @@ class SCREEN {
       case 3:
       /** tvservice **/
         exec("tvservice -s | grep Hz", (err, stdout, stderr)=> {
-          if (err) {
-            this.logError(err)
-            this.screen.error = true
-          } else {
+          if (err) this.logError(err)
+          else {
             let responseSh = stdout.trim()
             if (responseSh) actual = true
             this.resultDisplay(actual,wanted)
@@ -233,7 +225,6 @@ class SCREEN {
           if (err) {
             this.logError(err)
             this.logError("HDMI CEC Error: " + stdout)
-            this.screen.error = true
           } else {
             let responseSh = stdout.trim()
             var displaySh = responseSh.split("\n")[1].split(" ")[2]
@@ -246,10 +237,8 @@ class SCREEN {
       case 5:
       /** dmps linux **/
         exec("xset q | grep Monitor", (err, stdout, stderr)=> {
-          if (err) {
-            this.logError("[Display Error] " + err)
-            this.screen.error = true
-          } else {
+          if (err) this.logError("[Display Error] " + err)
+          else {
             let responseSh = stdout.trim()
             var displaySh = responseSh.split(" ")[2]
             if (displaySh == "On") actual = true
