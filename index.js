@@ -31,21 +31,49 @@ class SCREEN {
       displayBar: false,
       detectorSleeping: false,
       governorSleeping: false,
-      rpi4: false,
-      linux: false
+      mode: 1
     }
     this.config = Object.assign(this.default, this.config)
     this.screen = {
+      mode: this.config.mode,
       running: false,
       locked: false,
-      power: false
+      power: false,
+      error: false
+    }
+    if (this.config.turnOffDisplay) {
+      switch (this.config.mode) {
+        case 0:
+          console.log("[SCREEN] Mode 0: Disabled")
+          break
+        case 1:
+          console.log("[SCREEN] Mode 1: vcgencmd")
+          break
+        case 2:
+          console.log("[SCREEN] Mode 2: dpms rpi")
+          break
+        case 3:
+          console.log("[SCREEN] Mode 3: tvservice")
+          break
+        case 4:
+          console.log("[SCREEN] Mode 4: HDMI CEC")
+          break
+        case 5:
+          console.log("[SCREEN] Mode 5: dpms linux")
+          break
+        default:
+          this.logError("Unknow Mode Set to 0 (Disabled)")
+          this.config.mode = 0
+          break
+      }
     }
     console.log("[SCREEN] Screen v"+ this.version +" Initialized...")
   }
+
   activate () {
     if (!this.config.turnOffDisplay && !this.config.ecoMode) return log("Disabled.")
     process.on('exit', (code) => {
-      if (this.config.turnOffDisplay) this.setPowerDisplay(true)
+      if (this.config.turnOffDisplay && this.config.mode) this.setPowerDisplay(true)
       if (this.config.governorSleeping) this.governor("GOVERNOR_WORKING")
       console.log('[SCREEN] ByeBye !')
       console.log('[SCREEN] @bugsounet')
@@ -59,10 +87,7 @@ class SCREEN {
     else log("Restart.")
     this.sendSocketNotification("SCREEN_PRESENCE", true)
     if (!this.screen.power) {
-      if (this.config.turnOffDisplay) {
-        if (this.config.linux) this.setPowerDisplay(true)
-        else this.wantedPowerDisplay(true)
-      }
+      if (this.config.turnOffDisplay && this.config.mode) this.wantedPowerDisplay(true)
       if (this.config.ecoMode) {
         this.sendSocketNotification("SCREEN_SHOWING")
         this.screen.power = true
@@ -90,7 +115,7 @@ class SCREEN {
             this.sendSocketNotification("SCREEN_HIDING")
             this.screen.power = false
           }
-          if (this.config.turnOffDisplay) this.wantedPowerDisplay(false)
+          if (this.config.turnOffDisplay && this.config.mode) this.wantedPowerDisplay(false)
         }
         this.interval = null
         if (this.config.detectorSleeping) this.detector("SNOWBOY_STOP")
@@ -106,12 +131,13 @@ class SCREEN {
 
     if (!this.screen.power) {
       if (this.config.governorSleeping) this.governor("GOVERNOR_WORKING")
-      if (this.config.turnOffDisplay) this.wantedPowerDisplay(true)
+      if (this.config.turnOffDisplay && this.config.mode) this.wantedPowerDisplay(true)
       if (this.config.ecoMode) {
         this.sendSocketNotification("SCREEN_SHOWING")
         this.screen.power = true
       }
     }
+    this.sendSocketNotification("SCREEN_PRESENCE", true)
     if (!this.screen.running) return
     clearInterval(this.interval)
     this.interval = null
@@ -129,10 +155,7 @@ class SCREEN {
 
   wakeup() {
     if (this.screen.locked) return
-    if (!this.screen.power) {
-      //if (this.config.governorSleeping) this.governor("GOVERNOR_WORKING")
-      if (this.config.detectorSleeping) this.detector("SNOWBOY_START")
-    }
+    if (!this.screen.power && this.config.detectorSleeping) this.detector("SNOWBOY_START")
     this.reset()
   }
 
@@ -156,26 +179,83 @@ class SCREEN {
   }
 
   wantedPowerDisplay (wanted) {
-    if (this.config.rpi4 || this.config.linux) {
-      var actual = false
-      exec("DISPLAY=:0 xset q | grep Monitor", (err, stdout, stderr)=> {
-        if (err == null) {
-          let responseSh = stdout.trim()
-          var displaySh = responseSh.split(" ")[2]
-          if (displaySh == "On") actual = true
-          this.resultDisplay(actual,wanted)
-        }
-        else log("[Display Error] " + err)
-      })
-    } else {
-      exec("/usr/bin/vcgencmd display_power", (err, stdout, stderr)=> {
-        if (err == null) {
-          var displaySh = stdout.trim()
-          var actual = Boolean(Number(displaySh.substr(displaySh.length -1)))
-          this.resultDisplay(actual,wanted)
-        }
-        else log("[Display Error] " + err)
-      })
+    if (this.screen.error) return console.log("[SCREEN] mode Configuration: Error Detected !")
+    var actual = false
+    switch (this.config.mode) {
+      case 0:
+      /** disabled **/
+        log("Disabled mode")
+        break
+      case 1:
+      /** vcgencmd **/
+        exec("/usr/bin/vcgencmd display_power", (err, stdout, stderr)=> {
+          if (err) {
+            this.logError(err)
+            this.screen.error = true
+          } else {
+            var displaySh = stdout.trim()
+            actual = Boolean(Number(displaySh.substr(displaySh.length -1)))
+            this.resultDisplay(actual,wanted)
+          }
+        })
+        break
+      case 2:
+      /** dpms rpi**/
+        var actual = false
+        exec("DISPLAY=:0 xset q | grep Monitor", (err, stdout, stderr)=> {
+          if (err) {
+            this.logError(err)
+            this.screen.error = true
+          } else {
+            let responseSh = stdout.trim()
+            var displaySh = responseSh.split(" ")[2]
+            if (displaySh == "On") actual = true
+            this.resultDisplay(actual,wanted)
+          }
+        })
+        break
+      case 3:
+      /** tvservice **/
+        exec("tvservice -s | grep Hz", (err, stdout, stderr)=> {
+          if (err) {
+            this.logError(err)
+            this.screen.error = true
+          } else {
+            let responseSh = stdout.trim()
+            if (responseSh) actual = true
+            this.resultDisplay(actual,wanted)
+          }
+        })
+        break
+      case 4:
+      /** CEC **/
+        exec("echo 'pow 0' | cec-client -s -d 1", (err, stdout, stderr)=> {
+          if (err) {
+            this.logError(err)
+            this.logError("HDMI CEC Error: " + stdout)
+            this.screen.error = true
+          } else {
+            let responseSh = stdout.trim()
+            var displaySh = responseSh.split(" ")[2]
+            if (displaySh == "on") actual = true
+            this.resultDisplay(actual,wanted)
+          }
+        })
+        break
+      case 5:
+      /** dmps linux **/
+        exec("xset q | grep Monitor", (err, stdout, stderr)=> {
+          if (err) {
+            this.logError("[Display Error] " + err)
+            this.screen.error = true
+          } else {
+            let responseSh = stdout.trim()
+            var displaySh = responseSh.split(" ")[2]
+            if (displaySh == "On") actual = true
+            this.resultDisplay(actual,wanted)
+          }
+        })
+        break
     }
   }
 
@@ -187,12 +267,27 @@ class SCREEN {
   }
 
   setPowerDisplay (set) {
-    if (this.config.rpi4 || this.config.linux) {
-      if (set) exec("DISPLAY=:0 xset dpms force on")
-      else exec("DISPLAY=:0 xset dpms force off")
-    } else {
-      if (set) exec("/usr/bin/vcgencmd display_power 1")
-      else exec("/usr/bin/vcgencmd display_power 0")
+    switch (this.config.mode) {
+      case 1:
+        if (set) exec("/usr/bin/vcgencmd display_power 1")
+        else exec("/usr/bin/vcgencmd display_power 0")
+        break
+      case 2:
+        if (set) exec("DISPLAY=:0 xset dpms force on")
+        else exec("DISPLAY=:0 xset dpms force off")
+        break
+      case 3:
+        if (set) exec("tvservice -p && sudo chvt 6 && sudo chvt 7")
+        else exec("tvservice -o")
+        break
+      case 4:
+        if (set) exec("echo 'on 0' | cec-client -s")
+        else exec("echo 'standby 0' | cec-client -s")
+        break
+      case 5:
+        if (set) exec("xset dpms force on")
+        else exec("xset dpms force off")
+        break
     }
     log("Display " + (set ? "ON." : "OFF."))
     this.screen.power = set
@@ -200,6 +295,10 @@ class SCREEN {
   
   state() {
     this.sendSocketNotification("SCREEN_STATE", this.screen)
+  }
+  
+  logError(err) {
+    console.error("[SCREEN] " + err)
   }
 }
 

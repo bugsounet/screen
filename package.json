@@ -1,9 +1,11 @@
 {
   "name": "@bugsounet/screen",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "node screen management library",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "preinstall": "sudo apt-get install cec-utils -y"
+  },
   "keywords": [
     "screen",
     "node",
