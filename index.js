@@ -98,7 +98,7 @@ class SCREEN {
     this.counter = this.config.delay
     this.interval = setInterval( ()=> {
       this.screen.running = true
-      this.counter -= 1000
+
       if (this.config.displayCounter) {
         this.sendSocketNotification("SCREEN_TIMER", moment(new Date(this.counter)).format("mm:ss"))
         if (this.config.dev) log("Counter:", moment(new Date(this.counter)).format("mm:ss"))
@@ -122,6 +122,7 @@ class SCREEN {
         this.sendSocketNotification("SCREEN_PRESENCE", false)
         log("Stops by counter.")
       }
+      this.counter -= 1000
     }, 1000)
   }
 
@@ -174,7 +175,7 @@ class SCREEN {
   }
 
   forceEnd () {
-    this.counter = 1000
+    this.counter = 0
   }
 
   wantedPowerDisplay (wanted) {
