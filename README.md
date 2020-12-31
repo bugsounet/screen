@@ -21,7 +21,8 @@ this.config = {
   displayBar: true,
   detectorSleeping: true,
   governorSleeping: true,
-  mode: 1
+  mode: 1,
+  delayed: 0
 }
 
 var debug = true
@@ -61,6 +62,7 @@ Screen(screenConfig, callback, debug, detectorControl, governorControl)
 - `detectorSleeping` - send a notification to manage detector when screen is off
 - `governorSleeping` - send a notification to manage governor when screen is off
 - `mode` - mode for turn on/off screen
+- `delayed` - delayed time for turn on the screen if your screen is off
 
 5 modes are available:
  - `mode: 1` - use vgencmd (RPI only)
