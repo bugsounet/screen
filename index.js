@@ -31,14 +31,17 @@ class SCREEN {
       displayBar: false,
       detectorSleeping: false,
       governorSleeping: false,
-      mode: 1
+      mode: 1,
+      delayed: 0
     }
     this.config = Object.assign(this.default, this.config)
     this.screen = {
       mode: this.config.mode,
       running: false,
       locked: false,
-      power: false
+      power: false,
+      delayed: this.config.delayed,
+      isDelayed: false
     }
     if (this.config.turnOffDisplay) {
       switch (this.config.mode) {
@@ -150,13 +153,24 @@ class SCREEN {
     clearInterval(this.interval)
     this.interval = null
     this.screen.running = false
+    this.screen.isDelayed = false
     this.start(true)
   }
 
   wakeup() {
-    if (this.screen.locked) return
-    if (!this.screen.power && this.config.detectorSleeping) this.detector("SNOWBOY_START")
-    this.reset()
+    if (this.screen.locked || this.screen.isDelayed) return
+    if (this.screen.delayed && !this.screen.power) {
+      this.screen.isDelayed = true
+      log("Delayed wakeup in", this.screen.delayed, "ms")
+      setTimeout(() => {
+        log("Delayed wakeup")
+        if (this.config.detectorSleeping) this.detector("SNOWBOY_START")
+        this.reset()
+      }, this.screen.delayed)
+    } else {
+      if (!this.screen.power && this.config.detectorSleeping) this.detector("SNOWBOY_START")
+      this.reset()
+    }
   }
 
   lock() {
