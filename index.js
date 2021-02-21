@@ -296,10 +296,15 @@ class SCREEN {
     }
     log("Display " + (set ? "ON." : "OFF."))
     this.screen.power = set
+    this.SendScreenPowerState()
   }
   
   state() {
     this.sendSocketNotification("SCREEN_STATE", this.screen)
+  }
+
+  SendScreenPowerState() {
+    this.sendSocketNotification("SCREEN_POWER", this.screen.power)
   }
   
   logError(err) {
