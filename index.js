@@ -24,6 +24,8 @@ class SCREEN {
     this.version = require('./package.json').version
     this.interval = null
     this.default = {
+      animateBody: false,
+      animateTime: 3000,
       delay: 5 * 60 * 1000,
       turnOffDisplay: true,
       ecoMode: true,
@@ -41,7 +43,10 @@ class SCREEN {
       locked: false,
       power: false,
       delayed: this.config.delayed,
-      isDelayed: false
+      isDelayed: false,
+      awaitBeforeTurnOff: this.config.animateBody,
+      awaitBeforeTurnOffTimer: null,
+      awaitBeforeTurnOffTime: this.config.animateTime
     }
     if (this.config.turnOffDisplay) {
       switch (this.config.mode) {
@@ -88,6 +93,8 @@ class SCREEN {
     if (this.screen.locked || this.screen.running || (!this.config.turnOffDisplay && !this.config.ecoMode)) return
     if (!restart) log("Start.")
     else log("Restart.")
+    clearTimeout(this.screen.awaitBeforeTurnOffTimer)
+    this.screen.awaitBeforeTurnOffTimer= null
     this.sendSocketNotification("SCREEN_PRESENCE", true)
     if (!this.screen.power) {
       if (this.config.turnOffDisplay && this.config.mode) this.wantedPowerDisplay(true)
@@ -285,7 +292,8 @@ class SCREEN {
     if (!actual && wanted) this.setPowerDisplay(true)
   }
 
-  setPowerDisplay (set) {
+  async setPowerDisplay (set) {
+    if (this.screen.awaitBeforeTurnOff) await this.sleep(this.screen.awaitBeforeTurnOffTime)
     switch (this.config.mode) {
       case 1:
         if (set) exec("/usr/bin/vcgencmd display_power 1")
@@ -323,6 +331,12 @@ class SCREEN {
   
   logError(err) {
     console.error("[SCREEN] " + err)
+  }
+
+  sleep(ms=1300) {
+    return new Promise((resolve) => {
+      this.screen.awaitBeforeTurnOffTimer = setTimeout(resolve, ms)
+    })
   }
 }
 
