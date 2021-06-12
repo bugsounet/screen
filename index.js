@@ -293,7 +293,7 @@ class SCREEN {
   }
 
   async setPowerDisplay (set) {
-    if (this.screen.awaitBeforeTurnOff) await this.sleep(this.screen.awaitBeforeTurnOffTime)
+    if (this.screen.awaitBeforeTurnOff && !set) await this.sleep(this.screen.awaitBeforeTurnOffTime)
     switch (this.config.mode) {
       case 1:
         if (set) exec("/usr/bin/vcgencmd display_power 1")
