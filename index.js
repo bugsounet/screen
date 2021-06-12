@@ -293,7 +293,11 @@ class SCREEN {
   }
 
   async setPowerDisplay (set) {
+    log("Display " + (set ? "ON." : "OFF."))
+    this.screen.power = set
+    this.SendScreenPowerState()
     if (this.screen.awaitBeforeTurnOff && !set) await this.sleep(this.screen.awaitBeforeTurnOffTime)
+    // and finally apply rules !
     switch (this.config.mode) {
       case 1:
         if (set) exec("/usr/bin/vcgencmd display_power 1")
@@ -316,9 +320,6 @@ class SCREEN {
         else exec("xset dpms force off")
         break
     }
-    log("Display " + (set ? "ON." : "OFF."))
-    this.screen.power = set
-    this.SendScreenPowerState()
   }
   
   state() {
