@@ -128,7 +128,7 @@ class SCREEN {
           if (this.config.turnOffDisplay && this.config.mode) this.wantedPowerDisplay(false)
         }
         this.interval = null
-        if (this.config.detectorSleeping) this.detector("SNOWBOY_STOP")
+        if (this.config.detectorSleeping) this.detector("DETECTOR_STOP")
         if (this.config.governorSleeping) this.governor("GOVERNOR_SLEEPING")
         this.sendSocketNotification("SCREEN_PRESENCE", false)
         log("Stops by counter.")
@@ -172,11 +172,11 @@ class SCREEN {
       log("Delayed wakeup in", this.screen.delayed, "ms")
       setTimeout(() => {
         log("Delayed wakeup")
-        if (this.config.detectorSleeping) this.detector("SNOWBOY_START")
+        if (this.config.detectorSleeping) this.detector("DETECTOR_START")
         this.reset()
       }, this.screen.delayed)
     } else {
-      if (!this.screen.power && this.config.detectorSleeping) this.detector("SNOWBOY_START")
+      if (!this.screen.power && this.config.detectorSleeping) this.detector("DETECTOR_START")
       this.reset()
     }
   }
